@@ -1,6 +1,6 @@
 ---
 name: buhi
-description: Play a cute "Buhi" sound effect
+description: Provide voice-based task completion notifications to assist Human-in-the-Loop workflows.
 user-invocable: true
 ---
 
