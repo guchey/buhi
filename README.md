@@ -1,59 +1,55 @@
-# 🐕 Buhi - Claude Code Sound Effects
+# 🐕 Buhi - Task Completion Sound Notifications for Claude Code
 
-Claude Codeのタスク完了時に「ブヒ」音を鳴らすジョークリポジトリです。
+A Claude Code skill that plays a cute "Buhi" (pig sound) notification whenever tasks complete.
 
-## 🎵 概要
+## 🎵 What is Buhi?
 
-このリポジトリは、Claude Codeのhooks機能を使用してタスク完了時に音声ファイルを再生する設定を提供します。
-タスクが完了するたびに「ブヒ」という可愛い音が鳴ります。
+Buhi is a skill for Claude Code that adds audible notifications to your development workflow. Every time Claude Code finishes a task, you'll hear a delightful "Buhi" sound - perfect for knowing when long-running operations complete without constantly monitoring your terminal.
 
-## ⚡ クイックインストール
+This skill leverages Claude Code's hooks system to automatically trigger sound playback on task completion.
 
-### 方法1: npx add-skill を使用（推奨）
+## ⚡ Quick Start
+
+### Installation
+
+Install the skill using `add-skill`:
 
 ```bash
 npx add-skill guchey/buhi
 ```
 
-### 方法2: npm パッケージとしてインストール
+### Setup
+
+After installation, run the skill once to configure:
 
 ```bash
-npx @guchey/buhi
+/buhi
 ```
 
-どちらの方法も自動的に以下を実行します：
-- 音声ファイルを `~/.claude/` にコピー
-- `~/.claude/settings.json` に Stop フックを追加
-- 既存の設定を保持
+This will:
+- Copy the sound file to `~/.claude/buhi.m4a` (if not already present)
+- Configure your `~/.claude/settings.json` with the appropriate Stop hook
+- Preserve all existing settings
+- Auto-detect your OS and use the correct audio player
 
-インストール後、Claude Code を再起動してください。
+### Done!
 
-## 📋 手動セットアップ手順
+Restart Claude Code and you'll hear "Buhi" every time a task completes.
 
-### 🤖 Claude向け自律セットアップ
+## 🚀 How It Works
 
-Claudeがこのリポジトリを設定する場合の完全な手順：
+Buhi configures Claude Code's **Stop hook** to trigger audio playback when tasks finish. The skill:
 
-#### ステップ1: リポジトリのクローン
-```bash
-git clone https://github.com/guchey/buhi.git
-cd buhi
-```
+1. **Auto-detects your OS** and selects the appropriate audio command:
+   - **macOS**: `afplay` (pre-installed)
+   - **Linux**: `paplay` or `aplay` (requires PulseAudio or ALSA)
+   - **Windows**: PowerShell SoundPlayer (pre-installed on Windows 10+)
 
-#### ステップ2: Claude設定ディレクトリの準備
-```bash
-# Claude Code設定ディレクトリを作成
-mkdir -p ~/.claude
-```
+2. **Manages the sound file**: Copies `buhi.m4a` to `~/.claude/` on first run
 
-#### ステップ3: 音声ファイルの配置
-```bash
-# buhi.m4aファイルをClaude設定ディレクトリにコピー
-cp buhi.m4a ~/.claude/
-```
+3. **Updates settings safely**: Merges with existing `~/.claude/settings.json` configuration
 
-#### ステップ4: settings.jsonの作成・更新
-`~/.claude/settings.json`ファイルを作成または更新します：
+The resulting hook configuration looks like this:
 
 ```json
 {
@@ -73,92 +69,104 @@ cp buhi.m4a ~/.claude/
 }
 ```
 
-**重要**: 既存の`settings.json`がある場合は、`hooks`セクションを適切にマージしてください。
+## 🎨 Customization
 
-#### ステップ5: 動作テスト
-```bash
-# 音声ファイルが正しくコピーされているか確認
-ls -la ~/.claude/buhi.m4a
+### Adjust Volume
 
-# 音声が再生されるかテスト
-afplay ~/.claude/buhi.m4a
-```
-
-#### ステップ6: Claude Code再起動
-設定を有効にするためにClaude Codeを再起動してください。
-
-## 🚀 使用方法
-
-1. 上記のセットアップを完了
-2. Claude Codeでタスクを実行
-3. タスク完了時に自動的に「ブヒ」音が再生される
-
-## 📝 注意事項
-
-- macOSの`afplay`コマンドを使用しているため、macOS環境でのみ動作します
-- 他のOSを使用している場合は、適切な音声再生コマンドに変更してください：
-  - Windows: `powershell -c (New-Object Media.SoundPlayer "path/to/buhi.wav").PlaySync()`
-  - Linux: `aplay buhi.wav` または `paplay buhi.wav`
-
-## 🎉 カスタマイズ
-
-- 他の音声ファイルに変更したい場合は、`buhi.m4a`を別のファイルに置き換えてください
-- 音量を調整したい場合は、`afplay`コマンドに`-v`オプションを追加できます：
-  ```json
-  "command": "afplay -v 0.5 ~/.claude/buhi.m4a"
-  ```
-
-## 🛠️ 設定の詳細
-
-### settings.jsonのマージ方法
-
-既存の`~/.claude/settings.json`がある場合の適切なマージ方法：
-
-1. **既存ファイルの確認**：
-```bash
-cat ~/.claude/settings.json
-```
-
-2. **hooksセクションの追加**：
-既存の設定に`hooks`セクションを追加します。例：
+Edit `~/.claude/settings.json` to control volume (macOS example):
 
 ```json
-{
-  "existing_setting": "value",
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay ~/.claude/buhi.m4a"
-          }
-        ]
-      }
-    ]
-  }
-}
+"command": "afplay -v 0.5 ~/.claude/buhi.m4a"
 ```
 
-### 環境別のコマンド設定
+Volume range: `0.0` (mute) to `1.0` (full volume)
 
-- **macOS**: `afplay ~/.claude/buhi.m4a`
-- **Windows**: `powershell -c "(New-Object Media.SoundPlayer '~/.claude/buhi.wav').PlaySync()"`
-- **Linux**: `aplay ~/.claude/buhi.wav` または `paplay ~/.claude/buhi.wav`
+### Use Your Own Sound
 
-### トラブルシューティング
+Replace the sound file with any audio you prefer:
 
-1. **音声が鳴らない場合**：
-   - ファイルパスの確認: `ls -la ~/.claude/buhi.m4a`
-   - 音声テスト: `afplay ~/.claude/buhi.m4a`
-   - Claude Code再起動
+```bash
+cp your-sound.m4a ~/.claude/buhi.m4a
+```
 
-2. **設定が反映されない場合**：
-   - JSONシンタックスの確認
-   - settings.jsonの権限確認
-   - Claude Codeの完全再起動
+Supported formats vary by OS - `.m4a`, `.mp3`, `.wav` typically work on all platforms.
 
-## ⚠️ 免責事項
+### Disable Temporarily
 
-これはジョークリポジトリです。職場や静かな環境での使用は十分にご注意ください！
+Remove or comment out the Stop hook in `~/.claude/settings.json`.
+
+## 🗑️ Uninstallation
+
+To completely remove Buhi:
+
+1. Delete the Stop hook from `~/.claude/settings.json`
+2. Remove the sound file:
+   ```bash
+   rm ~/.claude/buhi.m4a
+   ```
+
+## 💡 Use Cases
+
+- **Long-running builds**: Get notified when compilation finishes
+- **Test suites**: Hear when your tests complete
+- **File operations**: Know when large file searches or transformations finish
+- **Focus work**: Stay in the zone while waiting for tasks to complete
+
+## 🛠️ Troubleshooting
+
+### Sound doesn't play
+
+1. **Verify the file exists**:
+   ```bash
+   ls -la ~/.claude/buhi.m4a
+   ```
+
+2. **Test audio playback** (macOS example):
+   ```bash
+   afplay ~/.claude/buhi.m4a
+   ```
+
+3. **Check settings.json syntax**:
+   ```bash
+   cat ~/.claude/settings.json | python -m json.tool
+   ```
+
+4. **Restart Claude Code** completely
+
+### Wrong OS command
+
+If you use multiple operating systems, manually edit `~/.claude/settings.json` to use the correct command for your current OS.
+
+## 📦 Installation
+
+The only supported installation method is via `add-skill`:
+
+```bash
+npx add-skill guchey/buhi
+```
+
+For manual installation or customization, clone this repository and run `/buhi` from Claude Code.
+
+## 🤝 Contributing
+
+This is a fun project, but contributions are welcome! Ideas:
+
+- Support for additional sound effects
+- Configuration UI
+- Volume controls per-task
+- Different sounds for success/failure
+
+## ⚠️ Disclaimer
+
+This is a playful enhancement for your development workflow. **Please be considerate**:
+- May not be appropriate for quiet offices
+- Sounds play after EVERY task completion (could be frequent)
+- Test with headphones first!
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details.
+
+---
+
+**Note**: The name "Buhi" comes from the Japanese onomatopoeia for a pig's snort (ブヒ). This is a joke repository, but it's genuinely useful for task completion notifications! 🐕

@@ -1,25 +1,52 @@
 ---
 name: buhi
-description: Adds a "Buhi" sound effect when Claude Code tasks complete
-user-invocable: false
-disable-model-invocation: true
+description: Play a cute "Buhi" sound effect when tasks complete
+user-invocable: true
 ---
 
-# Buhi - Claude Code Sound Effects
+# Buhi - Task Completion Sound Notifications
 
-This skill adds a cute "Buhi" (pig sound) effect that plays when Claude Code completes tasks.
+Setup task completion sound notifications for Claude Code. When you invoke `/buhi`, this skill will automatically configure your system to play a "Buhi" sound whenever Claude Code finishes a task.
 
-## Installation
+## Instructions
 
-This skill automatically:
+When the user runs `/buhi`, execute the following setup automatically:
 
-1. Copies the `buhi.m4a` sound file to `~/.claude/`
-2. Updates `~/.claude/settings.json` to add a Stop hook that plays the sound
-3. Preserves any existing settings in your settings.json
+### 1. Check for sound file
 
-## How It Works
+```bash
+ls -la ~/.claude/buhi.m4a
+```
 
-The skill adds a hook configuration that triggers whenever Claude Code stops (task completion):
+If the file doesn't exist, locate and copy it:
+
+```bash
+# Try skill directory first
+if [ -f ~/.claude/skills/buhi/buhi.m4a ]; then
+  cp ~/.claude/skills/buhi/buhi.m4a ~/.claude/buhi.m4a
+elif [ -f ~/.claude/skills/.curated/buhi/buhi.m4a ]; then
+  cp ~/.claude/skills/.curated/buhi/buhi.m4a ~/.claude/buhi.m4a
+else
+  echo "Warning: Sound file not found in standard skill locations"
+fi
+```
+
+### 2. Detect OS and set audio command
+
+```bash
+# Detect operating system
+case "$(uname -s)" in
+  Darwin*)  AUDIO_CMD='afplay ~/.claude/buhi.m4a' ;;
+  Linux*)   AUDIO_CMD='paplay ~/.claude/buhi.m4a' ;;
+  MINGW*|MSYS*|CYGWIN*) AUDIO_CMD='powershell -c "(New-Object Media.SoundPlayer \"~/.claude/buhi.m4a\").PlaySync()"' ;;
+  *)        AUDIO_CMD='afplay ~/.claude/buhi.m4a' ;;
+esac
+echo "Using audio command: $AUDIO_CMD"
+```
+
+### 3. Update settings.json
+
+Create or update `~/.claude/settings.json` with the Stop hook. Use the Read tool to check existing settings, then use Edit or Write to add:
 
 ```json
 {
@@ -39,33 +66,38 @@ The skill adds a hook configuration that triggers whenever Claude Code stops (ta
 }
 ```
 
-## Compatibility
+**Important**:
+- If `settings.json` exists, merge the new hook with existing configuration
+- If a Stop hook already exists, add to the array (don't replace)
+- Use the OS-appropriate command from step 2
 
-- **macOS**: Uses `afplay` command (pre-installed)
-- **Linux**: Requires `aplay` or `paplay` (install via package manager)
-- **Windows**: Requires PowerShell (pre-installed on Windows 10+)
+### 4. Test the setup
+
+```bash
+# Verify file was copied
+ls -l ~/.claude/buhi.m4a
+
+# Test audio playback (macOS example)
+afplay ~/.claude/buhi.m4a
+```
+
+### 5. Inform the user
+
+Tell them:
+- ✅ Setup complete! Buhi sound notifications are now configured.
+- 🔄 Restart Claude Code for changes to take effect.
+- 🎵 The "Buhi" sound will play when tasks complete.
+- ⚙️ Customize volume in `~/.claude/settings.json` (e.g., `afplay -v 0.5 ...`)
 
 ## Customization
 
-### Adjust Volume
-
-Edit your `~/.claude/settings.json` to adjust the volume (0.0 to 1.0):
-
+Users can adjust volume by editing the command in settings.json:
 ```json
 "command": "afplay -v 0.5 ~/.claude/buhi.m4a"
 ```
 
-### Use Your Own Sound
-
-Replace `~/.claude/buhi.m4a` with your own audio file.
+Volume range: 0.0 (mute) to 1.0 (full volume)
 
 ## Uninstallation
 
-To remove the sound effect:
-
-1. Remove the `Stop` hook from `~/.claude/settings.json`
-2. Delete `~/.claude/buhi.m4a`
-
-## Note
-
-This is a joke repository. Use responsibly in quiet environments! 🐕
+Remove the Stop hook from `~/.claude/settings.json` and optionally delete `~/.claude/buhi.m4a`.
