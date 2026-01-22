@@ -14,17 +14,17 @@ When the user runs `/buhi`, detect the OS and play the sound using the appropria
 
 **macOS:**
 ```bash
-afplay ~/.claude/skills/buhi/buhi.m4a
+afplay buhi.m4a
 ```
 
 **Linux:**
 ```bash
-paplay ~/.claude/skills/buhi/buhi.m4a
+paplay buhi.m4a
 ```
 
 **Windows:**
 ```bash
-powershell -c "(New-Object Media.SoundPlayer '~/.claude/skills/buhi/buhi.m4a').PlaySync()"
+powershell -c "(New-Object Media.SoundPlayer 'buhi.m4a').PlaySync()"
 ```
 
 That's it! Just detect the OS and play the sound from the skill directory.
