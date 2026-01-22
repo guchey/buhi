@@ -32,7 +32,7 @@ Edit your `~/.claude/settings.json` to add the Stop hook. The hook will automati
         "hooks": [
           {
             "type": "command",
-            "command": "afplay ~/.claude/buhi.m4a"
+            "command": "afplay ~/.claude/skills/buhi/buhi.m4a"
           }
         ]
       }
@@ -51,7 +51,7 @@ Edit your `~/.claude/settings.json` to add the Stop hook. The hook will automati
         "hooks": [
           {
             "type": "command",
-            "command": "paplay ~/.claude/buhi.m4a"
+            "command": "paplay ~/.claude/skills/buhi/buhi.m4a"
           }
         ]
       }
@@ -70,7 +70,7 @@ Edit your `~/.claude/settings.json` to add the Stop hook. The hook will automati
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -c \"(New-Object Media.SoundPlayer '~/.claude/buhi.m4a').PlaySync()\""
+            "command": "powershell -c \"(New-Object Media.SoundPlayer '~/.claude/skills/buhi/buhi.m4a').PlaySync()\""
           }
         ]
       }
@@ -89,7 +89,7 @@ Run the `/buhi` command to test:
 /buhi
 ```
 
-This will copy the sound file to `~/.claude/buhi.m4a` (if needed) and play the sound.
+This will play the "Buhi" sound.
 
 ### Done!
 
@@ -102,14 +102,13 @@ Buhi leverages Claude Code's **Stop hook** to trigger audio playback when tasks 
 ### The `/buhi` Command
 
 The `/buhi` skill command plays the "Buhi" sound effect immediately. Use it to:
-- Test that your sound configuration is working
+- Test that your sound is working
 - Manually trigger the sound effect
-- Verify the sound file was copied correctly
+- Hear the cute pig sound anytime!
 
 When you run `/buhi`, it will:
-1. Copy `buhi.m4a` to `~/.claude/` if it doesn't exist
-2. Detect your OS (macOS, Linux, or Windows)
-3. Play the sound using the appropriate command
+1. Detect your OS (macOS, Linux, or Windows)
+2. Play the sound from the skill directory using the appropriate command
 
 ### Task Completion Notifications
 
