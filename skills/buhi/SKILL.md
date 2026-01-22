@@ -1,6 +1,6 @@
 ---
 name: buhi
-description: Audible task completion notifications for Claude Code. Use this skill when the user wants to (1) test the task completion sound by running /buhi, (2) hear the notification sound manually, or (3) get help with configuring automatic sound playback on task completion using Claude Code's Stop hook system.
+description: Audible task completion notifications for Claude Code. Use this skill when the user wants to (1) test the task completion sound by running /buhi, (2) hear the notification sound manually, or (3) get help with configuring automatic sound playback on task completion using Claude Code's Stop hook system. The skill automatically detects whether it's installed globally or locally and configures the appropriate settings.json file with absolute paths.
 user-invocable: true
 ---
 
@@ -19,24 +19,56 @@ This skill provides two key capabilities:
 
 When invoked, this command:
 
-1. Detects the operating system (macOS, Linux, or Windows)
-2. Plays the `buhi.m4a` sound file from the skill directory using the appropriate OS command
+1. Detects whether the skill is installed globally (`~/.claude/skills/buhi/`) or locally (`.claude/skills/buhi/`)
+2. Automatically configures the Stop hook in the appropriate `settings.json` with the correct absolute path
+3. Detects the operating system (macOS, Linux, or Windows)
+4. Plays the `buhi.m4a` sound file from the skill directory using the appropriate OS command
+
+This means you only need to run `/buhi` once to set up automatic task completion notifications.
+
+### Installation Locations
+
+The skill automatically adapts to where it's installed:
+
+- **Global installation** (`~/.claude/skills/buhi/`): Configures `~/.claude/settings.json` - notifications work for all projects
+- **Local installation** (`.claude/skills/buhi/`): Configures `.claude/settings.json` in your project - notifications work only for this project
+
+### Path Detection Logic
+
+When `/buhi` is invoked, it:
+
+1. **Detects installation location** by examining the skill's base directory path:
+   - If the base directory is `~/.claude/skills/buhi/` → Global installation
+   - If the base directory is `<project>/.claude/skills/buhi/` → Local installation
+
+2. **Determines settings.json path**:
+   - Global: `~/.claude/settings.json`
+   - Local: `<project>/.claude/settings.json` (two directories up from skill base)
+
+3. **Constructs absolute audio file path**:
+   - Uses the skill's base directory path + `/buhi.m4a`
+   - This ensures the hook works regardless of the current working directory
+
+4. **Selects audio player based on OS**:
+   - macOS: `afplay`
+   - Linux: `paplay`
+   - Windows: PowerShell `Media.SoundPlayer`
 
 ### Implementation
 
 **macOS:**
 ```bash
-afplay buhi.m4a
+afplay <absolute-path-to>/buhi.m4a
 ```
 
 **Linux:**
 ```bash
-paplay buhi.m4a
+paplay <absolute-path-to>/buhi.m4a
 ```
 
 **Windows:**
 ```bash
-powershell -c "(New-Object Media.SoundPlayer 'buhi.m4a').PlaySync()"
+powershell -c "(New-Object Media.SoundPlayer '<absolute-path-to>/buhi.m4a').PlaySync()"
 ```
 
 ### Usage
@@ -48,13 +80,23 @@ Simply run `/buhi` to:
 
 ## Automatic Task Completion Notifications
 
-To enable automatic sound playback when tasks complete, configure Claude Code's Stop hook in `~/.claude/settings.json`.
+The `/buhi` command automatically configures the Stop hook in the appropriate `settings.json` file. This hook triggers the notification sound whenever a Claude Code task completes.
 
-### Configuration
+### Automatic Configuration
 
-Add the Stop hook to your settings file:
+Running `/buhi` will:
+1. Detect the skill installation location (global or local)
+2. Determine the correct `settings.json` path
+3. Use the absolute path to the audio file for reliability
+4. Create or update the Stop hook configuration with your OS-appropriate audio player
 
-**macOS:**
+This ensures the notification works regardless of your current working directory.
+
+### Manual Configuration (Optional)
+
+If you need to manually configure or customize the hook, here's what `/buhi` sets up. Note that it uses absolute paths to ensure reliability:
+
+**macOS (Global installation):**
 ```json
 {
   "hooks": {
@@ -73,7 +115,26 @@ Add the Stop hook to your settings file:
 }
 ```
 
-**Linux:**
+**macOS (Local installation):**
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /absolute/path/to/project/.claude/skills/buhi/buhi.m4a"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Linux (Global installation):**
 ```json
 {
   "hooks": {
@@ -92,7 +153,7 @@ Add the Stop hook to your settings file:
 }
 ```
 
-**Windows:**
+**Windows (Global installation):**
 ```json
 {
   "hooks": {
@@ -111,20 +172,25 @@ Add the Stop hook to your settings file:
 }
 ```
 
+The `/buhi` command automatically determines your installation type and OS, then configures the appropriate absolute path.
+
 **Important Notes:**
-- If you already have hooks configured, merge the Stop hook into your existing configuration
-- Restart Claude Code after modifying settings.json
-- The sound will play after EVERY task completion
+- **Global installation**: Configures `~/.claude/settings.json` - notifications work for all projects
+- **Local installation**: Configures `.claude/settings.json` in your project - notifications work only for this project
+- If you already have hooks configured, `/buhi` will preserve your existing hooks
+- The sound will play after EVERY task completion (globally or per-project depending on installation)
+- Uses absolute paths to ensure the hook works regardless of your current working directory
+- No need to restart Claude Code - hooks are loaded automatically
 
 ## Customization
 
 ### Adjust Volume
 
-Add volume parameters to the hook command:
+Edit your `settings.json` file and add volume parameters to the hook command:
 
 **macOS example:**
 ```json
-"command": "afplay -v 0.5 ~/.claude/skills/buhi/buhi.m4a"
+"command": "afplay -v 0.5 /absolute/path/to/buhi.m4a"
 ```
 
 Volume range: `0.0` (mute) to `1.0` (full volume)
@@ -134,15 +200,26 @@ Volume range: `0.0` (mute) to `1.0` (full volume)
 Replace `buhi.m4a` with your own audio file:
 
 ```bash
+# For local installation
+cp your-sound.m4a .claude/skills/buhi/buhi.m4a
+
+# For global installation
 cp your-sound.m4a ~/.claude/skills/buhi/buhi.m4a
+```
+
+Or update your `settings.json` to reference a different sound file:
+
+```json
+"command": "afplay /path/to/your/custom-sound.m4a"
 ```
 
 Supported formats: `.m4a`, `.mp3`, `.wav` (varies by OS and audio player)
 
 ### Disable Notifications
 
-Remove or comment out the Stop hook from `~/.claude/settings.json`:
+Remove or comment out the Stop hook from your `settings.json`:
 
+**For local installation** (`.claude/settings.json`):
 ```json
 {
   "hooks": {
@@ -151,12 +228,27 @@ Remove or comment out the Stop hook from `~/.claude/settings.json`:
 }
 ```
 
+**For global installation** (`~/.claude/settings.json`):
+```json
+{
+  "hooks": {
+    // "Stop": [...]  // Commented out
+  }
+}
+```
+
+Or delete the Stop hook entry entirely if you have no other hooks configured.
+
 ## Troubleshooting
 
 ### Sound doesn't play when running `/buhi`
 
 1. **Verify skill installation:**
    ```bash
+   # For local installation
+   ls -la .claude/skills/buhi/buhi.m4a
+
+   # For global installation
    ls -la ~/.claude/skills/buhi/buhi.m4a
    ```
 
@@ -167,7 +259,7 @@ Remove or comment out the Stop hook from `~/.claude/settings.json`:
 
 3. **Test playback manually:**
    ```bash
-   # macOS
+   # macOS (use the appropriate path for your installation)
    afplay ~/.claude/skills/buhi/buhi.m4a
 
    # Linux
@@ -179,25 +271,42 @@ Remove or comment out the Stop hook from `~/.claude/settings.json`:
 
 ### Sound doesn't play on task completion
 
-1. **Verify settings.json syntax:**
+1. **Verify settings.json was created:**
    ```bash
+   # For local installation
+   cat .claude/settings.json
+
+   # For global installation
+   cat ~/.claude/settings.json
+   ```
+
+   If the file doesn't exist, run `/buhi` again to create it.
+
+2. **Verify settings.json syntax:**
+   ```bash
+   # For local installation
+   cat .claude/settings.json | python -m json.tool
+
+   # For global installation
    cat ~/.claude/settings.json | python -m json.tool
    ```
 
    Or use any JSON validator to ensure the file is valid JSON.
 
-2. **Check hook configuration:**
+3. **Check hook configuration:**
    - Ensure the Stop hook is properly configured
-   - Verify the file path is correct
-   - Confirm you've restarted Claude Code
+   - Verify the file path is an absolute path pointing to the audio file
+   - Check that the audio file exists at the specified path
+   - Confirm the path matches your installation type (global vs local)
 
-3. **Review hook execution:**
+4. **Review hook execution:**
    - Check Claude Code output for hook errors
    - Verify the matcher pattern (empty string matches all)
+   - Try running the command manually with the exact path from settings.json to test it works
 
 ### Multiple OS support
 
-If you use Claude Code on different operating systems, you may need to maintain separate settings.json files or manually update the command when switching platforms.
+The `/buhi` command automatically detects your operating system and configures the appropriate audio player command. If you switch between different operating systems on the same project, simply run `/buhi` again to update the configuration for your current OS.
 
 ## Technical Details
 
