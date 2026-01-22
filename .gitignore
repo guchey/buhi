@@ -10,3 +10,8 @@ Thumbs.db
 
 # Local Claude settings
 .claude/
+
+.agents/
+.claude/
+.cursor/
+.gemini/
