@@ -1,26 +1,20 @@
-# 🐕 Buhi - Task Completion Sound Notifications for Claude Code
+# Buhi
 
-A Claude Code skill that plays a cute "Buhi" (pig sound) notification whenever tasks complete.
+A Claude Code skill that provides audible task completion notifications.
 
-## 🎵 What is Buhi?
+## Overview
 
-Buhi is a skill for Claude Code that adds audible notifications to your development workflow. Every time Claude Code finishes a task, you'll hear a delightful "Buhi" sound - perfect for knowing when long-running operations complete without constantly monitoring your terminal.
+Buhi adds sound notifications to your Claude Code workflow. When tasks complete, you'll hear a distinctive "Buhi" sound - perfect for knowing when long-running operations finish without constantly monitoring your terminal.
 
-This skill leverages Claude Code's hooks system to automatically trigger sound playback on task completion.
+## Quick Start
 
-## ⚡ Quick Start
-
-### Step 1: Install the skill
-
-Install the skill using `add-skill`:
+Install the skill:
 
 ```bash
 npx add-skill guchey/buhi
 ```
 
-### Step 2: Configure the Stop hook
-
-Edit your `~/.claude/settings.json` to add the Stop hook. The hook will automatically play the "Buhi" sound when tasks complete.
+Configure the Stop hook in `~/.claude/settings.json`:
 
 **macOS:**
 ```json
@@ -79,144 +73,33 @@ Edit your `~/.claude/settings.json` to add the Stop hook. The hook will automati
 }
 ```
 
-**Note:** If you already have hooks configured, merge the Stop hook into your existing configuration.
-
-### Step 3: Test the sound
-
-Run the `/buhi` command to test:
+Test the sound:
 
 ```bash
 /buhi
 ```
 
-This will play the "Buhi" sound.
+## What's Included
 
-### Done!
+- `/buhi` - Command to play the task completion sound
+- `buhi.m4a` - Audio file (cute pig sound effect)
+- Hook configuration for automatic playback on task completion
 
-Restart Claude Code and you'll hear "Buhi" every time a task completes!
+## Use Cases
 
-## 🚀 How It Works
+- Long-running builds and compilations
+- Test suite execution
+- Large file operations
+- Background task completion notifications
 
-Buhi leverages Claude Code's **Stop hook** to trigger audio playback when tasks finish.
+## Documentation
 
-### The `/buhi` Command
+For detailed usage, customization options, and troubleshooting, see [SKILL.md](skills/buhi/SKILL.md).
 
-The `/buhi` skill command plays the "Buhi" sound effect immediately. Use it to:
-- Test that your sound is working
-- Manually trigger the sound effect
-- Hear the cute pig sound anytime!
-
-When you run `/buhi`, it will:
-1. Detect your OS (macOS, Linux, or Windows)
-2. Play the sound from the skill directory using the appropriate command
-
-### Task Completion Notifications
-
-To hear the sound automatically when tasks complete, configure the Stop hook in your `~/.claude/settings.json` (see Step 2 above).
-
-The hook uses OS-specific commands:
-- **macOS**: `afplay` (pre-installed)
-- **Linux**: `paplay` (requires PulseAudio)
-- **Windows**: PowerShell SoundPlayer (pre-installed on Windows 10+)
-
-## 🎨 Customization
-
-### Adjust Volume
-
-Edit `~/.claude/settings.json` to control volume (macOS example):
-
-```json
-"command": "afplay -v 0.5 ~/.claude/buhi.m4a"
-```
-
-Volume range: `0.0` (mute) to `1.0` (full volume)
-
-### Use Your Own Sound
-
-Replace the sound file with any audio you prefer:
-
-```bash
-cp your-sound.m4a ~/.claude/buhi.m4a
-```
-
-Supported formats vary by OS - `.m4a`, `.mp3`, `.wav` typically work on all platforms.
-
-### Disable Temporarily
-
-Remove or comment out the Stop hook in `~/.claude/settings.json`.
-
-## 🗑️ Uninstallation
-
-To completely remove Buhi:
-
-1. Delete the Stop hook from `~/.claude/settings.json`
-2. Remove the sound file:
-   ```bash
-   rm ~/.claude/buhi.m4a
-   ```
-
-## 💡 Use Cases
-
-- **Long-running builds**: Get notified when compilation finishes
-- **Test suites**: Hear when your tests complete
-- **File operations**: Know when large file searches or transformations finish
-- **Focus work**: Stay in the zone while waiting for tasks to complete
-
-## 🛠️ Troubleshooting
-
-### Sound doesn't play
-
-1. **Verify the file exists**:
-   ```bash
-   ls -la ~/.claude/buhi.m4a
-   ```
-
-2. **Test audio playback** (macOS example):
-   ```bash
-   afplay ~/.claude/buhi.m4a
-   ```
-
-3. **Check settings.json syntax**:
-   ```bash
-   cat ~/.claude/settings.json | python -m json.tool
-   ```
-
-4. **Restart Claude Code** completely
-
-### Wrong OS command
-
-If you use multiple operating systems, manually edit `~/.claude/settings.json` to use the correct command for your current OS.
-
-## 📦 Installation
-
-The only supported installation method is via `add-skill`:
-
-```bash
-npx add-skill guchey/buhi
-```
-
-For manual installation or customization, clone this repository and run `/buhi` from Claude Code.
-
-## 🤝 Contributing
-
-This is a fun project, but contributions are welcome! Ideas:
-
-- Support for additional sound effects
-- Configuration UI
-- Volume controls per-task
-- Different sounds for success/failure
-
-## ⚠️ Disclaimer
-
-This is a playful enhancement for your development workflow. **Please be considerate**:
-- May not be appropriate for quiet offices
-- Sounds play after EVERY task completion (could be frequent)
-- Test with headphones first!
-
-## 📄 License
+## License
 
 MIT License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-**Note**: The name "Buhi" comes from the Japanese onomatopoeia for a pig's snort (ブヒ). This is a joke repository, but it's genuinely useful for task completion notifications! 🐕
+**Note**: The name "Buhi" comes from the Japanese onomatopoeia for a pig's snort (ブヒ).
