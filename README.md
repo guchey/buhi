@@ -10,7 +10,7 @@ This skill leverages Claude Code's hooks system to automatically trigger sound p
 
 ## ⚡ Quick Start
 
-### Installation
+### Step 1: Install the skill
 
 Install the skill using `add-skill`:
 
@@ -18,39 +18,11 @@ Install the skill using `add-skill`:
 npx add-skill guchey/buhi
 ```
 
-### Setup
+### Step 2: Configure the Stop hook
 
-After installation, run the skill once to configure:
+Edit your `~/.claude/settings.json` to add the Stop hook. The hook will automatically play the "Buhi" sound when tasks complete.
 
-```bash
-/buhi
-```
-
-This will:
-- Copy the sound file to `~/.claude/buhi.m4a` (if not already present)
-- Configure your `~/.claude/settings.json` with the appropriate Stop hook
-- Preserve all existing settings
-- Auto-detect your OS and use the correct audio player
-
-### Done!
-
-Restart Claude Code and you'll hear "Buhi" every time a task completes.
-
-## 🚀 How It Works
-
-Buhi configures Claude Code's **Stop hook** to trigger audio playback when tasks finish. The skill:
-
-1. **Auto-detects your OS** and selects the appropriate audio command:
-   - **macOS**: `afplay` (pre-installed)
-   - **Linux**: `paplay` or `aplay` (requires PulseAudio or ALSA)
-   - **Windows**: PowerShell SoundPlayer (pre-installed on Windows 10+)
-
-2. **Manages the sound file**: Copies `buhi.m4a` to `~/.claude/` on first run
-
-3. **Updates settings safely**: Merges with existing `~/.claude/settings.json` configuration
-
-The resulting hook configuration looks like this:
-
+**macOS:**
 ```json
 {
   "hooks": {
@@ -68,6 +40,85 @@ The resulting hook configuration looks like this:
   }
 }
 ```
+
+**Linux:**
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "paplay ~/.claude/buhi.m4a"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Windows:**
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -c \"(New-Object Media.SoundPlayer '~/.claude/buhi.m4a').PlaySync()\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Note:** If you already have hooks configured, merge the Stop hook into your existing configuration.
+
+### Step 3: Test the sound
+
+Run the `/buhi` command to test:
+
+```bash
+/buhi
+```
+
+This will copy the sound file to `~/.claude/buhi.m4a` (if needed) and play the sound.
+
+### Done!
+
+Restart Claude Code and you'll hear "Buhi" every time a task completes!
+
+## 🚀 How It Works
+
+Buhi leverages Claude Code's **Stop hook** to trigger audio playback when tasks finish.
+
+### The `/buhi` Command
+
+The `/buhi` skill command plays the "Buhi" sound effect immediately. Use it to:
+- Test that your sound configuration is working
+- Manually trigger the sound effect
+- Verify the sound file was copied correctly
+
+When you run `/buhi`, it will:
+1. Copy `buhi.m4a` to `~/.claude/` if it doesn't exist
+2. Detect your OS (macOS, Linux, or Windows)
+3. Play the sound using the appropriate command
+
+### Task Completion Notifications
+
+To hear the sound automatically when tasks complete, configure the Stop hook in your `~/.claude/settings.json` (see Step 2 above).
+
+The hook uses OS-specific commands:
+- **macOS**: `afplay` (pre-installed)
+- **Linux**: `paplay` (requires PulseAudio)
+- **Windows**: PowerShell SoundPlayer (pre-installed on Windows 10+)
 
 ## 🎨 Customization
 
