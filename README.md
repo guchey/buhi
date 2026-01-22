@@ -14,65 +14,6 @@ Install the skill:
 npx add-skill guchey/buhi
 ```
 
-Configure the Stop hook in `~/.claude/settings.json`:
-
-**macOS:**
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay ~/.claude/skills/buhi/buhi.m4a"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Linux:**
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "paplay ~/.claude/skills/buhi/buhi.m4a"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Windows:**
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -c \"(New-Object Media.SoundPlayer '~/.claude/skills/buhi/buhi.m4a').PlaySync()\""
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
 Test the sound:
 
 ```bash
