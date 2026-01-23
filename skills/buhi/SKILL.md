@@ -1,6 +1,6 @@
 ---
 name: buhi
-description: Audible notifications for Claude Code tasks and user confirmations. Use this skill when the user wants to (1) test the notification sound by running /buhi, (2) hear the notification sound manually, or (3) get help with configuring automatic sound playback on task completion and user confirmation requests using Claude Code's hook system (Stop and BeforeAskUserQuestion hooks). The skill automatically detects whether it's installed globally or locally and configures the appropriate settings.json file with absolute paths.
+description: Audible notifications for Claude Code tasks and user confirmations. Use this skill when the user wants to (1) test the notification sound by running /buhi, (2) hear the notification sound manually, or (3) get help with configuring automatic sound playback on task completion and user confirmation requests using Claude Code's hook system (Stop hook and PreToolUse hook with AskUserQuestion matcher). The skill automatically detects whether it's installed globally or locally and configures the appropriate settings.json file with absolute paths.
 user-invocable: true
 ---
 
@@ -15,7 +15,7 @@ This skill provides two key capabilities:
 1. **Manual sound playback** - The `/buhi` command plays a "Buhi" sound effect (cute pig sound) to test notifications or trigger manually
 2. **Automatic notifications** - Integration with Claude Code's hook system to play sounds when:
    - Tasks complete (Stop hook)
-   - User confirmation is requested (BeforeAskUserQuestion hook) - such as Yes/No prompts, multiple choice selections, etc.
+   - User confirmation is requested (PreToolUse hook with AskUserQuestion matcher) - such as Yes/No prompts, multiple choice selections, etc.
 
 ## The `/buhi` Command
 
@@ -24,7 +24,7 @@ When invoked, this command:
 1. Detects whether the skill is installed globally (`~/.claude/skills/buhi/`) or locally (`.claude/skills/buhi/`)
 2. Automatically configures hooks in the appropriate `settings.json` with the correct absolute path:
    - **Stop hook**: Plays sound when tasks complete
-   - **BeforeAskUserQuestion hook**: Plays sound when user confirmation is requested
+   - **PreToolUse hook** (matcher: AskUserQuestion): Plays sound when user confirmation is requested
 3. Detects the operating system (macOS, Linux, or Windows)
 4. Plays the `buhi.m4a` sound file from the skill directory using the appropriate OS command
 
@@ -87,7 +87,7 @@ Simply run `/buhi` to:
 The `/buhi` command automatically configures hooks in the appropriate `settings.json` file. These hooks trigger the notification sound in the following scenarios:
 
 - **Task completion** (Stop hook): When Claude Code finishes executing a task
-- **User confirmation** (BeforeAskUserQuestion hook): When Claude asks for your input, such as Yes/No prompts, multiple choice selections, or other confirmations
+- **User confirmation** (PreToolUse hook with AskUserQuestion matcher): When Claude asks for your input, such as Yes/No prompts, multiple choice selections, or other confirmations
 
 ### Automatic Configuration
 
@@ -118,9 +118,9 @@ If you need to manually configure or customize the hook, here's what `/buhi` set
         ]
       }
     ],
-    "BeforeAskUserQuestion": [
+    "PreToolUse": [
       {
-        "matcher": "",
+        "matcher": "AskUserQuestion",
         "hooks": [
           {
             "type": "command",
@@ -148,9 +148,9 @@ If you need to manually configure or customize the hook, here's what `/buhi` set
         ]
       }
     ],
-    "BeforeAskUserQuestion": [
+    "PreToolUse": [
       {
-        "matcher": "",
+        "matcher": "AskUserQuestion",
         "hooks": [
           {
             "type": "command",
@@ -178,9 +178,9 @@ If you need to manually configure or customize the hook, here's what `/buhi` set
         ]
       }
     ],
-    "BeforeAskUserQuestion": [
+    "PreToolUse": [
       {
-        "matcher": "",
+        "matcher": "AskUserQuestion",
         "hooks": [
           {
             "type": "command",
@@ -208,9 +208,9 @@ If you need to manually configure or customize the hook, here's what `/buhi` set
         ]
       }
     ],
-    "BeforeAskUserQuestion": [
+    "PreToolUse": [
       {
-        "matcher": "",
+        "matcher": "AskUserQuestion",
         "hooks": [
           {
             "type": "command",
@@ -231,7 +231,7 @@ The `/buhi` command automatically determines your installation type and OS, then
 - If you already have hooks configured, `/buhi` will preserve your existing hooks
 - The sound will play in two scenarios (globally or per-project depending on installation):
   - After EVERY task completion (Stop hook)
-  - Before EVERY user confirmation request (BeforeAskUserQuestion hook)
+  - Before EVERY user confirmation request (PreToolUse hook with AskUserQuestion matcher)
 - Uses absolute paths to ensure the hook works regardless of your current working directory
 - No need to restart Claude Code - hooks are loaded automatically
 
@@ -277,7 +277,7 @@ Remove or comment out the hooks from your `settings.json`:
 {
   "hooks": {
     // "Stop": [...]  // Commented out - disables task completion notifications
-    // "BeforeAskUserQuestion": [...]  // Commented out - disables user confirmation notifications
+    // "PreToolUse": [...]  // Commented out - disables user confirmation notifications
   }
 }
 ```
@@ -287,7 +287,7 @@ Remove or comment out the hooks from your `settings.json`:
 {
   "hooks": {
     // "Stop": [...]  // Commented out - disables task completion notifications
-    // "BeforeAskUserQuestion": [...]  // Commented out - disables user confirmation notifications
+    // "PreToolUse": [...]  // Commented out - disables user confirmation notifications
   }
 }
 ```
@@ -380,7 +380,7 @@ The hooks trigger in the following scenarios:
 - Background operations complete
 - Agent processes stop
 
-**BeforeAskUserQuestion hook** triggers when:
+**PreToolUse hook** (with AskUserQuestion matcher) triggers when:
 - Claude asks for user confirmation (Yes/No prompts)
 - Claude presents multiple choice options
 - Any user input is requested via the AskUserQuestion tool

@@ -41,8 +41,8 @@ That's it! The `/buhi` command will:
 2. Play the notification sound
 3. Automatically configure the appropriate `settings.json` file with the correct absolute paths
 4. Enable notifications for:
-   - Task completions
-   - User confirmation requests (Yes/No, multiple choice, etc.)
+   - Task completions (Stop hook)
+   - User confirmation requests via PreToolUse hook for AskUserQuestion tool
 
 Now you'll hear the sound when tasks complete and when Claude needs your input (globally or per-project, depending on your installation).
 
@@ -52,7 +52,7 @@ Now you'll hear the sound when tasks complete and when Claude needs your input (
 - `buhi.m4a` - Audio file (cute pig sound effect)
 - Automatic hook configuration with intelligent path detection:
   - **Stop hook**: Task completion notifications
-  - **BeforeAskUserQuestion hook**: User confirmation notifications
+  - **PreToolUse hook** (matcher: AskUserQuestion): User confirmation notifications
   - Global: `~/.claude/settings.json` (affects all projects)
   - Local: `.claude/settings.json` (project-specific)
 - Absolute path resolution (works regardless of current directory)
