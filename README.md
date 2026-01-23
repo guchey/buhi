@@ -1,10 +1,14 @@
 # Buhi
 
-A Claude Code skill that provides audible task completion notifications.
+A Claude Code skill that provides audible notifications for task completions and user confirmations.
 
 ## Overview
 
-Buhi adds sound notifications to your Claude Code workflow. When tasks complete, you'll hear a distinctive "Buhi" sound - perfect for knowing when long-running operations finish without constantly monitoring your terminal.
+Buhi adds sound notifications to your Claude Code workflow. You'll hear a distinctive "Buhi" sound in two scenarios:
+- When tasks complete - perfect for knowing when long-running operations finish
+- When user confirmation is requested - get alerted when Claude needs your input (Yes/No prompts, multiple choice, etc.)
+
+No more constantly monitoring your terminal!
 
 The skill automatically detects whether it's installed globally or locally, and configures the appropriate `settings.json` file with absolute paths for reliable operation. No manual configuration required - just run `/buhi` once and you're done.
 
@@ -36,15 +40,19 @@ That's it! The `/buhi` command will:
 1. Detect whether it's installed globally or locally
 2. Play the notification sound
 3. Automatically configure the appropriate `settings.json` file with the correct absolute paths
-4. Enable task completion notifications
+4. Enable notifications for:
+   - Task completions
+   - User confirmation requests (Yes/No, multiple choice, etc.)
 
-Now every time a Claude Code task completes, you'll hear the sound (globally or per-project, depending on your installation).
+Now you'll hear the sound when tasks complete and when Claude needs your input (globally or per-project, depending on your installation).
 
 ## What's Included
 
 - `/buhi` - Command to play the sound and configure automatic notifications
 - `buhi.m4a` - Audio file (cute pig sound effect)
-- Automatic Stop hook configuration with intelligent path detection:
+- Automatic hook configuration with intelligent path detection:
+  - **Stop hook**: Task completion notifications
+  - **BeforeAskUserQuestion hook**: User confirmation notifications
   - Global: `~/.claude/settings.json` (affects all projects)
   - Local: `.claude/settings.json` (project-specific)
 - Absolute path resolution (works regardless of current directory)
@@ -64,6 +72,8 @@ Now every time a Claude Code task completes, you'll hear the sound (globally or 
 - Test suite execution
 - Large file operations
 - Background task completion notifications
+- User confirmation alerts (Yes/No prompts, multiple choice decisions)
+- Multi-tasking - switch to other apps and get alerted when Claude needs your input
 - Staying focused while waiting for operations to complete
 
 ## Documentation
